@@ -1,65 +1,496 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 
+const dishes = [
+  {
+    name: "Chicken Souvlaki",
+    image: "/assets/showcased-dishes/chicken-souvlaki.png",
+    description: "char-grilled chicken skewers, garlic marinade, lemon, oregano, house tzatziki",
+    price: "$26",
+  },
+  {
+    name: "Grilled Salmon",
+    image: "/assets/showcased-dishes/grilled-salmon.png",
+    description: "pan-seared fillet, wilted wild greens, capers, wild herb olive oil infusion",
+    price: "$32",
+  },
+  {
+    name: "Lamb Chops",
+    image: "/assets/showcased-dishes/lamb-chops.png",
+    description: "wood-fired rib chops, charred rosemary, sea salt, roasted garlic purée",
+    price: "$38",
+  },
+  {
+    name: "Grilled Octopus",
+    image: "/assets/showcased-dishes/grilled-octopus.png",
+    description: "tender grilled tentacle, pickled red onion, capers, lemon-herb oil, parsley",
+    price: "$28",
+  },
+  {
+    name: "Greek Salad",
+    image: "/assets/showcased-dishes/greek-salad.png",
+    description: "vine-ripened tomatoes, crisp cucumbers, barrel-aged feta, kalamata olives, wild oregano",
+    price: "$18",
+  },
+  {
+    name: "Galaktoboureko",
+    image: "/assets/showcased-dishes/galaktoboureko.png",
+    description: "crisp semolina custard pie, golden phyllo layers, orange blossom warm honey syrup",
+    price: "$14",
+  },
+];
+
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="bg-brand-navy text-brand-ivory min-h-screen">
+      {/* 1. HERO SECTION (Fills viewport, dark aesthetic) */}
+      <section className="relative min-h-screen flex flex-col justify-between overflow-x-hidden">
+        {/* Full-bleed background image with soft dark, warm-tinted overlay */}
+        <div className="absolute inset-0 -z-10 select-none">
+          <Image
+            src="/assets/hero.png"
+            alt="Little Coast Mediterranean Kitchen rustic dining atmosphere"
+            fill
+            priority
+            quality={75}
+            className="object-cover object-center opacity-40 motion-safe:animate-slow-zoom"
+          />
+          {/* Soft dark overlay with a hint of warm coastal navy to maintain text readability */}
+          <div className="absolute inset-0 bg-[#05111D]/75 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05111D]/30 via-transparent to-[#05111D]/80" />
+          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-brand-sand/10 to-transparent motion-safe:animate-drift" />
+        </div>
+
+        {/* Top Header / Navigation */}
+        <header className="w-full relative z-30">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-6 flex items-center justify-between">
+            {/* Logo on the left */}
+            <a href="#" className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-4 focus-visible:ring-offset-brand-navy rounded-3xl">
+              <div className="rounded-3xl border border-white/8 bg-brand-navy/30 backdrop-blur-md px-3 py-2 shadow-lg shadow-black/10">
+                <Image
+                  src="/assets/logos/logo-dark.png"
+                  alt="Little Coast Logo"
+                  width={220}
+                  height={124}
+                  className="h-12 sm:h-14 md:h-16 w-auto object-contain"
+                  priority
+                />
+              </div>
+            </a>
+
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-sm font-sans tracking-widest uppercase font-medium">
+              <a href="#menu" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Menu
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+              <a href="#story" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Our Story
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+              <a href="#visit" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Visit
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+              <a href="#reservations" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Reservations
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+            </nav>
+
+            {/* Desktop Call to Action */}
+            <div className="hidden md:block">
+              <a
+                href="#reservations"
+                className="inline-block bg-brand-terracotta text-brand-navy font-sans text-xs tracking-widest uppercase font-semibold px-6 py-3 rounded-full hover:bg-[#b06135] active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+              >
+                Book a table
+              </a>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 -mr-2 text-brand-ivory hover:text-brand-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy rounded-full transition-colors z-40"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
+              aria-label="Toggle navigation menu"
+            >
+              <div className="w-6 h-5 relative flex flex-col justify-between">
+                <span className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-[9px]" : ""}`} />
+                <span className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`} />
+                <span className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-[9px]" : ""}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* Mobile Navigation Drawer */}
+          <div
+            id="mobile-navigation"
+            className={`fixed inset-0 bg-brand-navy/98 z-30 flex flex-col justify-between px-8 py-24 transition-all duration-500 md:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto translate-y-0" : "opacity-0 pointer-events-none -translate-y-4"}`}
+          >
+            <div className="flex flex-col gap-8 text-center mt-8">
+              <a
+                href="#menu"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Menu
+              </a>
+              <a
+                href="#story"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Our Story
+              </a>
+              <a
+                href="#visit"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Visit
+              </a>
+              <a
+                href="#reservations"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Reservations
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-6 items-center">
+              <a
+                href="#reservations"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center bg-brand-terracotta text-brand-navy font-sans text-sm tracking-widest uppercase font-semibold py-4 rounded-full hover:bg-[#b06135] transition-all"
+              >
+                Book a table
+              </a>
+              <div className="text-center text-xs text-brand-seamist/80 mt-4 leading-relaxed font-sans">
+                <p>104 Coastal Highway, Portsmouth, NH</p>
+                <p className="mt-1">Tue — Sun: 5:00 PM — 10:00 PM</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Centered Content */}
+        <main className="flex-1 flex flex-col justify-center items-center text-center px-6 sm:px-8 lg:px-12 py-12 sm:py-16 relative z-10 max-w-5xl mx-auto">
+          {/* Eyebrow */}
+          <span className="text-[11px] sm:text-xs md:text-sm font-sans font-semibold tracking-[0.28em] uppercase text-brand-sand mb-4 sm:mb-6 motion-safe:animate-fade-up" style={{ animationDelay: "80ms" }}>
+            Mediterranean Kitchen
+          </span>
+
+          {/* Serif Headline - Poetic & Specific */}
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-brand-cream max-w-4xl leading-[1.08] sm:leading-[1.12] md:leading-[1.1] motion-safe:animate-fade-up" style={{ animationDelay: "180ms" }}>
+            Where the <span className="italic font-normal text-brand-sand">Mediterranean wind</span> meets the warmth of our <span className="italic font-normal text-brand-terracotta">wood-fired hearth</span>.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          {/* Subhead - Grounded & Informative */}
+          <p className="font-sans text-sm sm:text-base md:text-lg text-brand-ivory/85 max-w-xl lg:max-w-2xl mt-6 sm:mt-8 tracking-wide leading-relaxed motion-safe:animate-fade-up" style={{ animationDelay: "280ms" }}>
+            A rustic seaside kitchen serving coastal dishes on the historic shores of Portsmouth, New Hampshire.
           </p>
+
+          {/* Centered CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 mt-10 sm:mt-12 w-full sm:w-auto motion-safe:animate-fade-up" style={{ animationDelay: "380ms" }}>
+            <a
+              href="#reservations"
+              className="w-full sm:w-auto text-center bg-brand-terracotta text-brand-navy font-sans text-sm tracking-widest uppercase font-bold px-8 py-4 rounded-full hover:bg-[#b06135] active:scale-98 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy shadow-lg shadow-black/20"
+            >
+              Reserve a table
+            </a>
+            <a
+              href="#menu"
+              className="w-full sm:w-auto text-center border-2 border-brand-ivory/80 text-brand-ivory font-sans text-sm tracking-widest uppercase font-bold px-8 py-[14px] rounded-full hover:border-brand-cream hover:bg-brand-cream hover:text-brand-navy active:scale-98 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+            >
+              View menu
+            </a>
+          </div>
+        </main>
+
+        {/* Bottom Fold Info */}
+        <div className="w-full relative z-10 py-8 px-6 sm:px-8 lg:px-12">
+          <div className="max-w-7xl mx-auto flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-end">
+            {/* Bottom-left: address and opening hours */}
+            <div className="text-left font-sans text-xs sm:text-sm text-brand-seamist max-w-md leading-relaxed motion-safe:animate-fade-up" style={{ animationDelay: "480ms" }}>
+              <p className="font-semibold text-brand-sand uppercase tracking-wider mb-1">Visit Us</p>
+              <p>104 Coastal Highway, Portsmouth, NH</p>
+              <p className="text-brand-seamist/80 mt-0.5">
+                Tue — Sun: 5:00 PM — 10:00 PM <span className="mx-2 text-brand-sand/45">|</span> Closed Mondays
+              </p>
+            </div>
+            
+            {/* Subtle logo mark on the right (hidden on mobile) */}
+            <div className="hidden sm:block opacity-35 hover:opacity-60 transition-opacity motion-safe:animate-fade-up" style={{ animationDelay: "560ms" }}>
+              <span className="font-serif italic text-xs tracking-widest text-brand-sand">Little Coast © 2026</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* 2. FEATURED DISHES SECTION (Warm light aesthetic) */}
+      <section id="menu" className="scroll-mt-24 bg-brand-cream text-brand-navy py-20 sm:py-24 px-6 sm:px-8 lg:px-12 relative z-20">
+        <div className="max-w-7xl mx-auto">
+          
+          {/* Section Header */}
+          <div className="text-center mb-14 sm:mb-16 motion-safe:animate-fade-up">
+            <span className="text-[11px] sm:text-xs md:text-sm font-sans font-semibold tracking-[0.22em] uppercase text-brand-olive block mb-3">
+              From the kitchen
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-brand-navy mb-4 leading-[1.08]">
+              Featured Dishes
+            </h2>
+            <p className="font-sans text-sm sm:text-base text-brand-coastal/80 max-w-lg sm:max-w-xl mx-auto leading-relaxed">
+              A seasonal selection of wood-fired specialties and coastal classics.
+            </p>
+          </div>
+
+          {/* Dishes Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dishes.map((dish, index) => (
+              <div key={dish.name} className="group cursor-pointer flex flex-col motion-safe:animate-fade-up" style={{ animationDelay: `${120 + index * 70}ms` }}>
+                {/* Card Image */}
+                <div className="aspect-square w-full relative overflow-hidden rounded-2xl mb-4 bg-brand-navy/5 motion-safe:animate-fade-scale">
+                  <Image
+                    src={dish.image}
+                    alt={dish.name}
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                
+                {/* Title and Price */}
+                <div className="flex justify-between items-start gap-4">
+                  <h3 className="font-serif text-lg sm:text-xl font-medium text-brand-navy group-hover:text-brand-coastal transition-colors duration-300">
+                    {dish.name}
+                  </h3>
+                  <span className="font-sans font-semibold text-brand-terracotta text-sm sm:text-base whitespace-nowrap">
+                    {dish.price}
+                  </span>
+                </div>
+                
+                {/* Description */}
+                <p className="font-sans text-xs sm:text-sm text-brand-coastal/75 mt-2 line-clamp-2 leading-relaxed">
+                  {dish.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Centered Ghost Button */}
+          <div className="flex justify-center mt-14 sm:mt-16 motion-safe:animate-fade-up" style={{ animationDelay: "520ms" }}>
+            <a
+              href="#menu"
+              className="inline-block border-2 border-brand-coastal/85 text-brand-coastal font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-8 py-4 rounded-full hover:bg-brand-coastal hover:text-brand-cream hover:border-brand-coastal active:scale-98 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coastal focus-visible:ring-offset-2 focus-visible:ring-offset-brand-cream"
+            >
+              See full menu
+            </a>
+          </div>
+
         </div>
-      </main>
+      </section>
+
+      {/* 3. OUR STORY & VISIT SECTION (Warm Ivory background with ambient glows, asymmetrical grid layout) */}
+      <section id="story" className="scroll-mt-24 bg-brand-ivory text-brand-navy py-20 sm:py-24 pb-36 sm:pb-44 px-6 sm:px-8 lg:px-12 relative z-20 overflow-hidden">
+        {/* Soft corner glows for warm candlelit ambient effect */}
+        <div className="absolute top-0 left-0 w-72 sm:w-96 h-72 sm:h-96 -translate-x-1/3 -translate-y-1/3 bg-brand-terracotta/5 blur-[120px] rounded-full pointer-events-none motion-safe:animate-drift" />
+        <div className="absolute bottom-0 right-0 w-72 sm:w-96 h-72 sm:h-96 translate-x-1/3 translate-y-1/3 bg-brand-sand/15 blur-[120px] rounded-full pointer-events-none motion-safe:animate-drift" style={{ animationDelay: "2s" }} />
+
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* Left Column - Story Narrative */}
+            <div className="lg:col-span-7 flex flex-col items-start pr-0 lg:pr-8 motion-safe:animate-fade-up">
+              {/* Eyebrow */}
+              <span className="text-[11px] sm:text-xs md:text-sm font-sans font-semibold tracking-[0.22em] uppercase text-brand-olive mb-3 block">
+                Our Story
+              </span>
+              
+              {/* Heading H2 with last words highlighted in italic Terracotta Sunset */}
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-brand-navy leading-[1.1] sm:leading-[1.12]">
+                Greek Mediterranean dining, <span className="italic font-normal text-brand-terracotta">shaped by the coast.</span>
+              </h2>
+              
+              {/* Decorative divider */}
+              <div className="flex items-center gap-3 my-6 w-full max-w-xs">
+                <span className="h-px flex-1 bg-gradient-to-r from-transparent via-brand-terracotta/55 to-brand-sand/20" />
+                <span className="h-2 w-2 rounded-full bg-brand-terracotta shadow-[0_0_0_4px_rgba(201,119,69,0.08)]" />
+                <span className="h-px flex-1 bg-gradient-to-r from-brand-sand/20 via-brand-sand/55 to-transparent" />
+              </div>
+
+              {/* Paragraphs and blockquote */}
+              <div className="font-sans text-sm sm:text-base text-brand-coastal/90 space-y-5 sm:space-y-6 leading-relaxed max-w-prose">
+                <p>
+                  Our journey begins along the rocky cliffs of the Aegean, where the rhythm of the tides dictates the flow of our kitchen. Here at Little Coast, we honor those traditions with wood-fired patience. Each morning, dayboats bring the freshest catch directly to our kitchen, while wild hills herbs are gathered to season the hearth.
+                </p>
+
+                {/* Elegant Terracotta-Bordered Blockquote */}
+                <blockquote className="border-l-4 border-brand-terracotta pl-4 my-6">
+                  <p className="font-serif italic text-lg sm:text-xl text-brand-navy leading-relaxed font-medium">
+                    &ldquo;Every plate tells of salt, wind, and embers.&rdquo;
+                  </p>
+                </blockquote>
+
+                <p>
+                  We source our seafood from local dayboats, combining fresh daily catches with wild hill herbs, sun-cured Kalamata olive groves, and cold-pressed oil. In keeping with rustic seaside traditions, our food is shaped by simplicity, fire, and the warmth of Mediterranean hospitality.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column - Visuals & Floating Overlapping Card */}
+            <div className="lg:col-span-5 relative mt-8 lg:mt-0 pb-0 lg:pb-16 motion-safe:animate-fade-up" style={{ animationDelay: "160ms" }}>
+              
+              {/* Large vertical image container */}
+              <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] md:aspect-[4/5] rounded-3xl overflow-hidden group shadow-lg shadow-brand-navy/5 motion-safe:animate-fade-scale">
+                <Image
+                  src="/assets/exterior.png"
+                  alt="Little Coast Mediterranean Kitchen exterior seaside dining space"
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                  className="object-cover object-center transition-transform duration-[2000ms] ease-out group-hover:scale-105"
+                />
+              </div>
+
+              {/* Floating overlap contact details card */}
+              <div
+                id="visit"
+                className="scroll-mt-32 relative mt-6 lg:mt-0 lg:absolute lg:-bottom-20 left-0 right-0 lg:-left-12 lg:right-8 bg-brand-cream/92 backdrop-blur-md border border-brand-sand/20 rounded-3xl p-6 sm:p-8 shadow-xl shadow-brand-navy/10 transform transition-transform duration-300 hover:-translate-y-2 group/card"
+              >
+                <h3 className="font-serif text-lg sm:text-xl font-medium text-brand-navy mb-4">Location & Hours</h3>
+                
+                <ul className="space-y-4 text-xs sm:text-sm text-brand-coastal font-sans">
+                  
+                  {/* Location Address */}
+                  <li className="flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0">
+                      <svg className="w-5 h-5 stroke-brand-terracotta stroke-[1.5] fill-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-brand-navy">Address</p>
+                      <p className="text-brand-coastal/90">104 Coastal Highway</p>
+                    </div>
+                  </li>
+
+                  {/* Phone */}
+                  <li className="flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0">
+                      <svg className="w-5 h-5 stroke-brand-terracotta stroke-[1.5] fill-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.557-5.115-3.847-6.672-6.672l1.293-.97c.362-.272.528-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-brand-navy">Phone</p>
+                      <a href="tel:6035550198" className="text-brand-coastal/90 hover:text-brand-terracotta transition-colors">(603) 555-0198</a>
+                    </div>
+                  </li>
+
+                  {/* Email */}
+                  <li className="flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0">
+                      <svg className="w-5 h-5 stroke-brand-terracotta stroke-[1.5] fill-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-brand-navy">Email</p>
+                      <a href="mailto:hello@littlecoastkitchen.com" className="text-brand-coastal/90 hover:text-brand-terracotta transition-colors">hello@littlecoastkitchen.com</a>
+                    </div>
+                  </li>
+
+                  {/* Opening Hours */}
+                  <li className="flex items-start gap-3">
+                    <div className="mt-0.5 shrink-0">
+                      <svg className="w-5 h-5 stroke-brand-terracotta stroke-[1.5] fill-none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-brand-navy">Hours</p>
+                      <div className="text-brand-coastal/90 space-y-1 mt-1">
+                        <p><span className="font-medium text-brand-navy">Dinner:</span> Tue — Sun: 5:00 PM — 10:00 PM</p>
+                        <p><span className="font-medium text-brand-navy">Lunch:</span> Fri — Sun: 11:30 AM — 2:30 PM</p>
+                        <p className="text-brand-terracotta font-medium tracking-wide uppercase text-[10px] mt-1">Closed Mondays</p>
+                      </div>
+                    </div>
+                  </li>
+
+                </ul>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 4. RESERVATIONS CTA */}
+      <section id="reservations" className="scroll-mt-24 bg-brand-navy text-brand-cream py-20 sm:py-24 px-6 sm:px-8 lg:px-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(201,119,69,0.16),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(216,196,160,0.14),_transparent_35%)] pointer-events-none" />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="rounded-[2rem] border border-brand-sand/15 bg-brand-cream/6 backdrop-blur-sm px-6 sm:px-8 lg:px-10 py-10 sm:py-12 shadow-2xl shadow-black/20 motion-safe:animate-fade-up">
+            <div className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr] lg:items-end">
+              <div>
+                <span className="text-[11px] sm:text-xs font-sans font-semibold tracking-[0.24em] uppercase text-brand-sand block mb-3">
+                  Reservations
+                </span>
+                <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight leading-[1.08] max-w-2xl">
+                  Settle in for a table by the coast, and let the night unfold slowly.
+                </h2>
+                <p className="font-sans text-sm sm:text-base text-brand-ivory/82 mt-4 max-w-xl leading-relaxed">
+                  Reserve a seat for dinner, book ahead for the weekend, or call to plan a private gathering.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row lg:flex-col gap-3 sm:gap-4 lg:justify-end">
+                <a
+                  href="tel:6035550198"
+                  className="inline-flex justify-center text-center bg-brand-terracotta text-brand-navy font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-6 py-4 rounded-full hover:bg-[#b06135] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                >
+                  Call now
+                </a>
+                <a
+                  href="#visit"
+                  className="inline-flex justify-center text-center border border-brand-ivory/60 text-brand-ivory font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-6 py-4 rounded-full hover:bg-brand-ivory hover:text-brand-navy transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                >
+                  Find us
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. GLOBAL FOOTER (Simple, elegant dark background) */}
+      <footer className="bg-brand-navy border-t border-brand-sand/15 py-10 sm:py-12 px-6 sm:px-8 lg:px-12 relative z-20">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
+          <a href="#" className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta rounded-3xl">
+            <div className="rounded-3xl border border-white/8 bg-brand-navy/40 backdrop-blur-md px-3 py-2 shadow-lg shadow-black/10">
+              <Image
+                src="/assets/logos/logo-dark.png"
+                alt="Little Coast Logo"
+                width={190}
+                height={107}
+                className="h-10 sm:h-12 w-auto object-contain opacity-95"
+              />
+            </div>
+          </a>
+          <div className="text-center sm:text-right font-sans text-xs text-brand-seamist/85 leading-relaxed">
+            <p>Little Coast — Mediterranean Kitchen. All rights reserved.</p>
+            <p className="mt-1">Crafted with care in Portsmouth, NH © 2026</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
