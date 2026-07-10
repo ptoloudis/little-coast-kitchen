@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
 
 const dishes = [
@@ -54,6 +54,16 @@ type MenuSection = {
   title: string;
   description: string;
   items: MenuDish[];
+};
+
+type ReservationFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  partySize: string;
+  notes: string;
 };
 
 const menuSections: MenuSection[] = [
@@ -125,9 +135,12 @@ const menuSections: MenuSection[] = [
   },
 ];
 
+const reservationWebhookUrl = "https://hook.eu1.make.com/mrmeas8t96exfrhw5c7gpvusl3d3fq1f";
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [menuModalOpen, setMenuModalOpen] = useState(false);
+  const [reservationStatus, setReservationStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
   useEffect(() => {
     if (!menuModalOpen) {
@@ -154,6 +167,38 @@ export default function Home() {
   const openMenuModal = () => {
     setMobileMenuOpen(false);
     setMenuModalOpen(true);
+  };
+
+  const handleReservationSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const reservation = Object.fromEntries(formData.entries()) as unknown as ReservationFormData;
+
+    setReservationStatus("sending");
+
+    try {
+      const response = await fetch(reservationWebhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...reservation,
+          source: "little-coast-site",
+          submittedAt: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook request failed with ${response.status}`);
+      }
+
+      setReservationStatus("success");
+      event.currentTarget.reset();
+    } catch {
+      setReservationStatus("error");
+    }
   };
 
   return (
@@ -217,6 +262,10 @@ export default function Home() {
               </a>
               <a href="#visit" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
                 Visit
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+              <a href="#reservations" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Reservations
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
               </a>
             </nav>
@@ -287,6 +336,13 @@ export default function Home() {
                 className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
               >
                 Visit
+              </a>
+              <a
+                href="#reservations"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Reservations
               </a>
             </div>
 
@@ -563,38 +619,144 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. RESERVATIONS CTA */}
+      {/* 4. RESERVATIONS */}
       <section id="reservations" className="scroll-mt-24 bg-brand-navy text-brand-cream py-20 sm:py-24 px-6 sm:px-8 lg:px-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(201,119,69,0.16),_transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(216,196,160,0.14),_transparent_35%)] pointer-events-none" />
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="rounded-[2rem] border border-brand-sand/15 bg-brand-cream/6 backdrop-blur-sm px-6 sm:px-8 lg:px-10 py-10 sm:py-12 shadow-2xl shadow-black/20 motion-safe:animate-fade-up">
-            <div className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr] lg:items-end">
-              <div>
-                <span className="text-[11px] sm:text-xs font-sans font-semibold tracking-[0.24em] uppercase text-brand-sand block mb-3">
-                  Reservations
-                </span>
-                <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight leading-[1.08] max-w-2xl">
-                  Settle in for a table by the coast, and let the night unfold slowly.
-                </h2>
-                <p className="font-sans text-sm sm:text-base text-brand-ivory/82 mt-4 max-w-xl leading-relaxed">
-                  Reserve a seat for dinner, book ahead for the weekend, or call to plan a private gathering.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row lg:flex-col gap-3 sm:gap-4 lg:justify-end">
-                <a
-                  href="tel:6035550198"
-                  className="inline-flex justify-center text-center bg-brand-terracotta text-brand-navy font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-6 py-4 rounded-full hover:bg-[#b06135] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
-                >
-                  Call now
-                </a>
-                <a
-                  href="#visit"
-                  className="inline-flex justify-center text-center border border-brand-ivory/60 text-brand-ivory font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-6 py-4 rounded-full hover:bg-brand-ivory hover:text-brand-navy transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
-                >
-                  Find us
-                </a>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid gap-10 xl:grid-cols-[1.1fr_0.9fr] xl:items-start">
+            <div className="motion-safe:animate-fade-up">
+              <span className="text-[11px] sm:text-xs font-sans font-semibold tracking-[0.24em] uppercase text-brand-sand block mb-3">
+                Reservations
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight leading-[1.06] max-w-2xl">
+                Reserve a table for the evening, and let us shape the rest around your arrival.
+              </h2>
+              <p className="font-sans text-sm sm:text-base text-brand-ivory/82 mt-4 max-w-2xl leading-relaxed">
+                Share the basics now so we can route the request into a webhook later without changing the form structure.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2 text-sm font-sans text-brand-ivory/82 max-w-2xl">
+                <div className="rounded-2xl border border-brand-sand/15 bg-brand-cream/6 px-5 py-4">
+                  <p className="font-semibold text-brand-sand uppercase tracking-[0.18em] text-[11px] mb-1">Hours</p>
+                  <p>Tue — Sun: 5:00 PM — 10:00 PM</p>
+                  <p>Fri — Sun: 11:30 AM — 2:30 PM</p>
+                </div>
+                <div className="rounded-2xl border border-brand-sand/15 bg-brand-cream/6 px-5 py-4">
+                  <p className="font-semibold text-brand-sand uppercase tracking-[0.18em] text-[11px] mb-1">Notes</p>
+                  <p>Include dietary restrictions, celebrations, or seating requests.</p>
+                </div>
               </div>
             </div>
+
+            <form
+              onSubmit={handleReservationSubmit}
+              className="rounded-[2rem] border border-brand-sand/15 bg-brand-cream/8 backdrop-blur-sm p-6 sm:p-8 shadow-2xl shadow-black/20 motion-safe:animate-fade-up"
+            >
+              <div className="grid gap-5 sm:grid-cols-2">
+                <label className="sm:col-span-2 block">
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Name</span>
+                  <input
+                    name="name"
+                    type="text"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream placeholder:text-brand-seamist/70 outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                    placeholder="Your full name"
+                  />
+                </label>
+
+                <label>
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Email</span>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream placeholder:text-brand-seamist/70 outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                    placeholder="name@example.com"
+                  />
+                </label>
+
+                <label>
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Phone</span>
+                  <input
+                    name="phone"
+                    type="tel"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream placeholder:text-brand-seamist/70 outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                    placeholder="(603) 555-0198"
+                  />
+                </label>
+
+                <label>
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Date</span>
+                  <input
+                    name="date"
+                    type="date"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                  />
+                </label>
+
+                <label>
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Time</span>
+                  <input
+                    name="time"
+                    type="time"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                  />
+                </label>
+
+                <label>
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Party Size</span>
+                  <select
+                    name="partySize"
+                    required
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Select size
+                    </option>
+                    {Array.from({ length: 10 }, (_, index) => index + 1).map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="sm:col-span-2 block">
+                  <span className="mb-2 block text-[11px] font-sans font-semibold uppercase tracking-[0.22em] text-brand-sand">Notes</span>
+                  <textarea
+                    name="notes"
+                    rows={5}
+                    className="w-full rounded-2xl border border-brand-sand/15 bg-brand-navy/35 px-4 py-3 text-brand-cream placeholder:text-brand-seamist/70 outline-none transition focus:border-brand-sand focus:ring-2 focus:ring-brand-sand/30"
+                    placeholder="Dietary restrictions, allergies, celebrations, accessibility needs, or special seating requests"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <p className="text-xs sm:text-sm font-sans text-brand-ivory/70 leading-relaxed max-w-md">
+                  This form posts directly to our reservation webhook and is ready for Make processing.
+                </p>
+                <div className="flex flex-col items-stretch gap-3 sm:items-end">
+                  <button
+                    type="submit"
+                    disabled={reservationStatus === "sending"}
+                    className="inline-flex justify-center text-center bg-brand-terracotta text-brand-navy font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-6 py-4 rounded-full hover:bg-[#b06135] disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                  >
+                    {reservationStatus === "sending" ? "Sending..." : "Request reservation"}
+                  </button>
+                  {reservationStatus === "success" ? (
+                    <p className="text-xs sm:text-sm text-brand-sand text-right">Reservation request sent.</p>
+                  ) : null}
+                  {reservationStatus === "error" ? (
+                    <p className="text-xs sm:text-sm text-[#F4B8A4] text-right">We couldn’t send that just now. Please try again.</p>
+                  ) : null}
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </section>
