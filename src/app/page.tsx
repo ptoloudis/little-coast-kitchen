@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const dishes = [
@@ -42,13 +42,124 @@ const dishes = [
   },
 ];
 
+type MenuDish = {
+  name: string;
+  description: string;
+  price: string;
+  details: string[];
+  image?: string;
+};
+
+type MenuSection = {
+  title: string;
+  description: string;
+  items: MenuDish[];
+};
+
+const menuSections: MenuSection[] = [
+  {
+    title: "Small Plates",
+    description: "Bites to start the evening with a coastal Mediterranean rhythm.",
+    items: [
+      {
+        name: "Whipped Feta & Honey",
+        description: "olive oil, lemon zest, cracked pepper, grilled sourdough",
+        price: "$14",
+        details: ["Vegetarian", "Serves 2"],
+      },
+      {
+        name: "Grilled Octopus",
+        description: "charred lemon, pickled onion, capers, oregano oil",
+        price: "$28",
+        details: ["House favorite", "Gluten-free"],
+        image: "/assets/showcased-dishes/grilled-octopus.png",
+      },
+    ],
+  },
+  {
+    title: "From the Hearth",
+    description: "Wood-fired mains with bright herbs and deep coastal flavor.",
+    items: [
+      {
+        name: "Chicken Souvlaki",
+        description: "garlic marinade, lemon, oregano, tzatziki, warm pita",
+        price: "$26",
+        details: ["Chef favorite", "Contains dairy"],
+        image: "/assets/showcased-dishes/chicken-souvlaki.png",
+      },
+      {
+        name: "Grilled Salmon",
+        description: "wild greens, capers, herb oil, charred citrus",
+        price: "$32",
+        details: ["Market fish", "Gluten-free"],
+        image: "/assets/showcased-dishes/grilled-salmon.png",
+      },
+      {
+        name: "Lamb Chops",
+        description: "rosemary, roasted garlic purée, sea salt, olive oil jus",
+        price: "$38",
+        details: ["Signature cut", "Rich and savory"],
+        image: "/assets/showcased-dishes/lamb-chops.png",
+      },
+    ],
+  },
+  {
+    title: "Sweet Finish",
+    description: "Desserts and lighter finishes to close the meal gracefully.",
+    items: [
+      {
+        name: "Greek Salad",
+        description: "tomatoes, cucumbers, barrel-aged feta, olives, oregano",
+        price: "$18",
+        details: ["Vegetarian", "Fresh and bright"],
+        image: "/assets/showcased-dishes/greek-salad.png",
+      },
+      {
+        name: "Galaktoboureko",
+        description: "custard pie, phyllo layers, orange blossom honey syrup",
+        price: "$14",
+        details: ["House dessert", "Contains dairy"],
+        image: "/assets/showcased-dishes/galaktoboureko.png",
+      },
+    ],
+  },
+];
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuModalOpen, setMenuModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuModalOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuModalOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuModalOpen]);
+
+  const openMenuModal = () => {
+    setMobileMenuOpen(false);
+    setMenuModalOpen(true);
+  };
 
   return (
     <div className="bg-brand-navy text-brand-ivory min-h-screen">
       {/* 1. HERO SECTION (Fills viewport, dark aesthetic) */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-x-hidden">
+      <section id="home" className="relative min-h-screen flex flex-col justify-between overflow-x-hidden">
         {/* Full-bleed background image with soft dark, warm-tinted overlay */}
         <div className="absolute inset-0 -z-10 select-none">
           <Image
@@ -84,20 +195,28 @@ export default function Home() {
 
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-sm font-sans tracking-widest uppercase font-medium">
-              <a href="#menu" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
-                Menu
+              <a href="#home" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Home
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
               </a>
+              <a href="#featured-dishes" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
+                Featured Dishes
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </a>
+              <button
+                type="button"
+                onClick={openMenuModal}
+                className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group"
+              >
+                Menu
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
+              </button>
               <a href="#story" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
                 Our Story
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
               </a>
               <a href="#visit" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
                 Visit
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
-              </a>
-              <a href="#reservations" className="text-brand-ivory/80 hover:text-brand-cream transition-colors relative py-1 group">
-                Reservations
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-sand transition-all duration-300 group-hover:w-full" />
               </a>
             </nav>
@@ -135,12 +254,26 @@ export default function Home() {
           >
             <div className="flex flex-col gap-8 text-center mt-8">
               <a
-                href="#menu"
+                href="#featured-dishes"
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
               >
-                Menu
+                Featured Dishes
               </a>
+              <a
+                href="#home"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Home
+              </a>
+              <button
+                type="button"
+                onClick={openMenuModal}
+                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
+              >
+                Menu
+              </button>
               <a
                 href="#story"
                 onClick={() => setMobileMenuOpen(false)}
@@ -154,13 +287,6 @@ export default function Home() {
                 className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
               >
                 Visit
-              </a>
-              <a
-                href="#reservations"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-2xl font-serif tracking-wide hover:text-brand-sand transition-colors"
-              >
-                Reservations
               </a>
             </div>
 
@@ -205,12 +331,13 @@ export default function Home() {
             >
               Reserve a table
             </a>
-            <a
-              href="#menu"
+            <button
+              type="button"
+              onClick={openMenuModal}
               className="w-full sm:w-auto text-center border-2 border-brand-ivory/80 text-brand-ivory font-sans text-sm tracking-widest uppercase font-bold px-8 py-[14px] rounded-full hover:border-brand-cream hover:bg-brand-cream hover:text-brand-navy active:scale-98 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
             >
               View menu
-            </a>
+            </button>
           </div>
         </main>
 
@@ -235,7 +362,7 @@ export default function Home() {
       </section>
 
       {/* 2. FEATURED DISHES SECTION (Warm light aesthetic) */}
-      <section id="menu" className="scroll-mt-24 bg-brand-cream text-brand-navy py-20 sm:py-24 px-6 sm:px-8 lg:px-12 relative z-20">
+      <section id="featured-dishes" className="scroll-mt-24 bg-brand-cream text-brand-navy py-20 sm:py-24 px-6 sm:px-8 lg:px-12 relative z-20">
         <div className="max-w-7xl mx-auto">
           
           {/* Section Header */}
@@ -287,12 +414,13 @@ export default function Home() {
 
           {/* Centered Ghost Button */}
           <div className="flex justify-center mt-14 sm:mt-16 motion-safe:animate-fade-up" style={{ animationDelay: "520ms" }}>
-            <a
-              href="#menu"
+            <button
+              type="button"
+              onClick={openMenuModal}
               className="inline-block border-2 border-brand-coastal/85 text-brand-coastal font-sans text-xs sm:text-sm tracking-widest uppercase font-bold px-8 py-4 rounded-full hover:bg-brand-coastal hover:text-brand-cream hover:border-brand-coastal active:scale-98 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coastal focus-visible:ring-offset-2 focus-visible:ring-offset-brand-cream"
             >
               See full menu
-            </a>
+            </button>
           </div>
 
         </div>
@@ -491,6 +619,95 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {menuModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-brand-navy/96 backdrop-blur-2xl"
+          onClick={() => setMenuModalOpen(false)}
+          role="presentation"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(201,119,69,0.18),_transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(216,196,160,0.12),_transparent_30%)] pointer-events-none" />
+          <div className="relative h-full overflow-y-auto px-6 sm:px-8 lg:px-12 py-6 sm:py-8" onClick={(event) => event.stopPropagation()} role="presentation">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center justify-between gap-4 mb-8 sm:mb-10">
+                <div>
+                  <span className="text-[11px] sm:text-xs font-sans font-semibold tracking-[0.28em] uppercase text-brand-sand block mb-3">
+                    Full Menu
+                  </span>
+                  <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-brand-cream leading-[1.05]">
+                    Mediterranean dishes, grouped by the rhythm of the meal.
+                  </h2>
+                  <p className="font-sans text-sm sm:text-base text-brand-ivory/78 mt-4 max-w-2xl leading-relaxed">
+                    This menu surface is ready for a database-backed data source. Images stay square, and non-square uploads crop automatically to fit.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMenuModalOpen(false)}
+                  className="shrink-0 rounded-full border border-brand-sand/20 bg-brand-cream/8 px-4 py-3 text-brand-cream transition-colors hover:bg-brand-cream/14 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-terracotta focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+                  aria-label="Close menu"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-3">
+                {menuSections.map((section) => (
+                  <section key={section.title} className="rounded-[2rem] border border-brand-sand/15 bg-brand-cream/6 p-5 sm:p-6 shadow-2xl shadow-black/15">
+                    <div className="border-b border-brand-sand/15 pb-4 mb-5">
+                      <h3 className="font-serif text-2xl font-medium text-brand-cream">{section.title}</h3>
+                      <p className="font-sans text-sm text-brand-ivory/78 mt-2 leading-relaxed">{section.description}</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {section.items.map((item) => (
+                        <article key={item.name} className="rounded-[1.5rem] border border-brand-sand/15 bg-brand-navy/35 p-4 sm:p-5">
+                          <div className="grid gap-4 sm:grid-cols-[104px_1fr]">
+                            <div className="aspect-square overflow-hidden rounded-2xl bg-brand-cream/8">
+                              {item.image ? (
+                                <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  width={240}
+                                  height={240}
+                                  className="h-full w-full object-cover object-center"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-terracotta/18 via-brand-sand/10 to-transparent">
+                                  <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.3em] text-brand-sand/90">
+                                    No image
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="min-w-0">
+                              <div className="flex items-start justify-between gap-3">
+                                <h4 className="font-serif text-xl font-medium text-brand-cream leading-tight">{item.name}</h4>
+                                <span className="font-sans text-sm font-semibold text-brand-sand whitespace-nowrap">{item.price}</span>
+                              </div>
+
+                              <p className="font-sans text-sm text-brand-ivory/78 mt-2 leading-relaxed">{item.description}</p>
+
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                {item.details.map((detail) => (
+                                  <span key={detail} className="rounded-full border border-brand-sand/15 bg-brand-cream/8 px-3 py-1 text-[10px] font-sans font-semibold uppercase tracking-[0.2em] text-brand-ivory/82">
+                                    {detail}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
